@@ -33,3 +33,50 @@ function Remove-Backups {
         }
     }
 }
+
+function Remove-ParasiteRights {
+	param (
+		[string]$roleFileFullName
+	)
+	
+	[xml]$xml = Get-Content -Path $roleFileFullName
+
+	# Создаем менеджер пространств имен и регистрируем префикс
+	$nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+	$nsMgr.AddNamespace("r", "http://v8.1c.ru/8.2/roles")
+
+	# Удаляем все узлы <right>, у которых <value> равно "false"
+	$rightNodes = $xml.SelectNodes("//r:object/r:right[r:value='false']", $nsMgr)
+	foreach ($right in $rightNodes) {
+		$right.ParentNode.RemoveChild($right) | Out-Null
+	}
+
+	# Удаляем все узлы <object>, у которых не осталось узлов <right>
+	$objectNodes = $xml.SelectNodes("//r:object[not(r:right)]", $nsMgr)
+	foreach ($object in $objectNodes) {
+		$object.ParentNode.RemoveChild($object) | Out-Null
+	}
+
+	# Сохраняем результат
+	$xml.Save($roleFileFullName)
+
+}
+
+function Optimize-RoleSizes {
+	param (
+		[string]$sourcePath
+	)
+	
+	# Ищем папки с именем Roles рекурсивно
+	$rolesDirs = Get-ChildItem -Path $sourcePath -Directory -Recurse | Where-Object { $_.Name -eq 'Roles' }
+
+	foreach ($dir in $rolesDirs) {
+		# Ищем нужные файлы в каталоге Roles и его подкаталогах
+  		$files = Get-ChildItem -Path $dir.FullName -Recurse -File | Where-Object { $_.Name -in @('Rights.rights', 'Rights.xml') }
+
+  		foreach ($file in $files) {
+			Remove-ParasiteRights -roleFileFullName $file.FullName
+  		}
+	}
+
+}

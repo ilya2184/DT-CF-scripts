@@ -97,6 +97,19 @@ git add .
 git commit -m "Обновление $configVersion"
 ```
 
+## Пример: уменьшение размеров ролей
+```powershell
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+[string]$currentDir = $PSScriptRoot
+if ($currentDir -eq "") {$currentDir = Get-Location}
+$modulesDir = $currentDir
+Import-Module (Join-Path -Path $modulesDir -ChildPath "HelperFiles.psm1")
+
+$xmlPath = "C:\Temp\Accounting3"
+Optimize-RoleSizes -sourcePath $xmlPath
+```
+
 ## Пример: массовое развертывание релиза бухгалтерии в несколько баз с оповещением пользователей
 
 Этот пример демонстрирует автоматизацию развертывания релиза (файла конфигурации .cf) в несколько информационных баз 1С с помощью вспомогательных модулей, а также отправку уведомлений пользователям через Telegram. Все параметры берутся из вашего `credentials.json`.
