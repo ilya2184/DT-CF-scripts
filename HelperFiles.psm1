@@ -63,6 +63,12 @@ function Remove-ParasiteRights {
 
     # Удаляем все узлы <right>, у которых <value> равно "false"
     $rightNodes = $xml.SelectNodes("//r:object/r:right[r:value='false']", $nsMgr)
+    
+    # Если нет узлов для удаления - выходим
+    if ($rightNodes.Count -eq 0) {
+        return
+    }
+
     foreach ($right in $rightNodes) {
         $right.ParentNode.RemoveChild($right) | Out-Null
     }
