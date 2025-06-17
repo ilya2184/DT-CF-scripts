@@ -54,6 +54,19 @@ Function Get-NewLineChars {
     return $newLineChars
 }
 
+function Test-RoleProcessing {
+    param (
+        [System.Xml.XmlDocument]$xml,
+        [System.Xml.XmlNamespaceManager]$nsMgr
+    )
+    
+    $specialFlags = @("setForNewObjects", "independentRightsOfChildObjects")
+    return $specialFlags | Where-Object { 
+        $node = $xml.SelectSingleNode("//r:$_", $nsMgr)
+        $node -and $node.InnerText -eq "true"
+    }
+}
+
 function Remove-ParasiteRights {
     param (
         [string]$roleFileFullName
@@ -68,9 +81,8 @@ function Remove-ParasiteRights {
     $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
     $nsMgr.AddNamespace("r", "http://v8.1c.ru/8.2/roles")
 
-    # Проверяем setForNewObjects, например в ПолныеПрава
-    $setForNewObjects = $xml.SelectSingleNode("//r:setForNewObjects", $nsMgr)
-    if ($setForNewObjects -and $setForNewObjects.InnerText -eq "true") {
+    # Проверяем специальные флаги роли
+    if (Test-RoleProcessing -xml $xml -nsMgr $nsMgr) {
         return
     }
 
