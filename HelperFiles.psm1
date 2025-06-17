@@ -34,15 +34,11 @@ function Remove-Backups {
     }
 }
 
-
-function Remove-ParasiteRights {
+Function Get-NewLineChars {
     param (
-        [string]$roleFileFullName
+        [string]$fileText
     )
-  
-    # Считаем исходный файл как текст
-    $fileText = Get-Content -Raw -Encoding UTF8 $roleFileFullName
-
+    
     # Определяем перенос строк в исходном файле (по первому совпадению)
     if ($fileText -match "`r`n") {
         $newLineChars = "`r`n"  # Windows style CRLF
@@ -54,12 +50,29 @@ function Remove-ParasiteRights {
         # По умолчанию ставим CRLF (можно и LF)
         $newLineChars = "`r`n"
     }
+    
+    return $newLineChars
+}
+
+function Remove-ParasiteRights {
+    param (
+        [string]$roleFileFullName
+    )
+  
+    # Считаем исходный файл как текст
+    $fileText = Get-Content -Raw -Encoding UTF8 $roleFileFullName
 
     [xml]$xml = $fileText
 
     # Создаем менеджер пространств имен и регистрируем префикс
     $nsMgr = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
     $nsMgr.AddNamespace("r", "http://v8.1c.ru/8.2/roles")
+
+    # Проверяем setForNewObjects, например в ПолныеПрава
+    $setForNewObjects = $xml.SelectSingleNode("//r:setForNewObjects", $nsMgr)
+    if ($setForNewObjects -and $setForNewObjects.InnerText -eq "true") {
+        return
+    }
 
     # Удаляем все узлы <right>, у которых <value> равно "false"
     $rightNodes = $xml.SelectNodes("//r:object/r:right[r:value='false']", $nsMgr)
@@ -83,7 +96,7 @@ function Remove-ParasiteRights {
     $settings = New-Object System.Xml.XmlWriterSettings
     $settings.Indent = $true
     $settings.IndentChars = "`t"
-    $settings.NewLineChars = $newLineChars
+    $settings.NewLineChars = (Get-NewLineChars -fileText $fileText)
     $settings.NewLineHandling = "Replace"
 
     $writer = [System.Xml.XmlWriter]::Create($roleFileFullName, $settings)
