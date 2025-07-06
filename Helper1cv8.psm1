@@ -77,7 +77,7 @@ function Update-OnecBasesFromCfu {
     $ibUser = $ibLogin.user
     $ibPassword = $ibLogin.password
 
-    $dbms = $ibServerConfig.dbms
+    $dbms = $ibServerConfig.serverType
     if ($dbms -eq "file") {
         $dbPath = $ibConfig.path
         $updateArgs = @("DESIGNER",
@@ -121,7 +121,7 @@ function Update-DBCfg {
 
     $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
 
-    $dbms = $ibServerConfig.dbms
+    $dbms = $ibServerConfig.serverType
     if ($dbms -eq "file") {
         $dbPath = $ibConfig.path
         $importArgs = @("DESIGNER",
@@ -164,7 +164,7 @@ function Update-ibData {
 
     $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
 
-    $dbms = $ibServerConfig.dbms
+    $dbms = $ibServerConfig.serverType
     $cCommand = "ВыполнитьОбновлениеИЗавершитьРаботу"
     if ($dbms -eq "file") {
         $dbPath = $ibConfig.path

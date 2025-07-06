@@ -34,7 +34,7 @@ function Get-LoginFromConfig {
     )
 
     $foundLogins = $serverConfig.logintypes | Where-Object {
-        $_.type -eq $loginType
+        $_.loginType -eq $loginType
     }
 
     if (-not $foundLogins) {

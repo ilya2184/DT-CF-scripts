@@ -31,7 +31,7 @@ function Export-DBConfigToXML {
 
     $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
 
-    if ($ibServerConfig.dbms -eq "file") {
+    if ($ibServerConfig.serverType -eq "file") {
         $dbPath = $ibConfig.path
         $exportArgs = @("infobase", "config", "export",
             "--ignore-unresolved-refs"
@@ -44,7 +44,7 @@ function Export-DBConfigToXML {
         $dbServer = $ibConfig.dbserver
         $dbName = $ibConfig.dbname
         $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
-        $dbms = $dbServerConfig.dbms
+        $dbms = $dbServerConfig.serverType
         $dbLogin = Get-LoginFromConfig -serverConfig $dbServerConfig -loginType "databaseuser"
         $dbUser = $dbLogin.user
         $dbPassword = $dbLogin.password
@@ -118,7 +118,7 @@ function Import-ConfigToDBFromCF {
 
     $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
 
-    if ($ibServerConfig.dbms -eq "file") {
+    if ($ibServerConfig.serverType -eq "file") {
         $dbPath = $ibConfig.path
         $importArgs = @("infobase", "config", "load",
             "--data=`"$srvDataPath`"",
@@ -130,7 +130,7 @@ function Import-ConfigToDBFromCF {
         $dbServer = $ibConfig.dbserver
         $dbName = $ibConfig.dbname
         $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
-        $dbms = $dbServerConfig.dbms
+        $dbms = $dbServerConfig.serverType
         $dbLogin = Get-LoginFromConfig -serverConfig $dbServerConfig -loginType "databaseuser"
         $dbUser = $dbLogin.user
         $dbPassword = $dbLogin.password
@@ -166,7 +166,7 @@ function Set-SavedConfigToDB {
 
     $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
 
-    $dbms = $ibServerConfig.dbms
+    $dbms = $ibServerConfig.serverType
     if ($dbms -eq "file") {
         $dbPath = $ibConfig.path
         $importArgs = @("infobase", "config", "apply", "--force",
@@ -178,7 +178,7 @@ function Set-SavedConfigToDB {
         $dbServer = $ibConfig.dbserver
         $dbName = $ibConfig.dbname
         $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
-        $dbms = $dbServerConfig.dbms
+        $dbms = $dbServerConfig.serverType
         $dbLogin = Get-LoginFromConfig -serverConfig $dbServerConfig -loginType "databaseuser"
         $dbUser = $dbLogin.user
         $dbPassword = $dbLogin.password
@@ -215,8 +215,8 @@ function Backup-DataBase {
 
     $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
 
-    $dbServer = if ($ibServerConfig.dbms -eq "file") { $ibServer } else { $ibConfig.dbserver }
-    $dbName = if ($ibServerConfig.dbms -eq "file") { $ibName } else { $ibConfig.dbname } 
+    $dbServer = if ($ibServerConfig.serverType -eq "file") { $ibServer } else { $ibConfig.dbserver }
+    $dbName = if ($ibServerConfig.serverType -eq "file") { $ibName } else { $ibConfig.dbname } 
     $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
     $dbConfig = Get-DataBaseConfig -serverConfig $dbServerConfig -baseName $dbName
     $dumpPath = Join-Path -Path $dtsPath -ChildPath ($dbConfig.internal)
@@ -226,7 +226,7 @@ function Backup-DataBase {
     $dumpFileName = $dbName + $dateString + ".dt"
     $dumpFilePath = Join-Path -Path $dumpPath -ChildPath $dumpFileName
 
-    if ($ibServerConfig.dbms -eq "file") {
+    if ($ibServerConfig.serverType -eq "file") {
         $dbPath = $ibConfig.path
         $importArgs = @("infobase", "dump",
             "--data=`"$srvDataPath`"",
@@ -238,7 +238,7 @@ function Backup-DataBase {
         $dbServer = $ibConfig.dbserver
         $dbName = $ibConfig.dbname
         $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
-        $dbms = $dbServerConfig.dbms
+        $dbms = $dbServerConfig.serverType
         $dbLogin = Get-LoginFromConfig -serverConfig $dbServerConfig -loginType "databaseuser"
         $dbUser = $dbLogin.user
         $dbPassword = $dbLogin.password
