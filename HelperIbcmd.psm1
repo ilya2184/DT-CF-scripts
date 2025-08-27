@@ -254,3 +254,56 @@ function Backup-DataBase {
     Remove-Item -Path "$srvDataPath" -Recurse -Force
     Write-Host "Database $ibServer\$ibName dumped to $dumpFilePath" -ForegroundColor Yellow
 }
+
+function Restore-DataBase {
+    param (
+        [pscustomobject[]]$mainConfig,
+        [string]$ibServer,
+        [string]$ibName,
+        [string]$dumpFilePath
+    )
+
+    Write-Host "File $dumpFilePath restore to $ibServer\$ibName started" -ForegroundColor Yellow
+
+    $srvName = Get-UniqueExportName
+    $srvDataPath = Join-Path -Path $Env:TEMP -ChildPath ("srv" + $srvName)
+
+    $ibServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $ibServer
+    $ibLogin = Get-LoginFromConfig -serverConfig $ibServerConfig -loginType "ibadmin"
+    $ibUser = $ibLogin.user
+    $ibPassword = $ibLogin.password
+
+    $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
+
+    $dbServer = if ($ibServerConfig.serverType -eq "file") { $ibServer } else { $ibConfig.dbserver }
+    $dbName = if ($ibServerConfig.serverType -eq "file") { $ibName } else { $ibConfig.dbname } 
+    $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
+    
+    if ($ibServerConfig.serverType -eq "file") {
+        $dbPath = $ibConfig.path
+        $importArgs = @("infobase", "restore",
+            "--data=`"$srvDataPath`"",
+            "--database-path=`"$dbPath`"",
+            "--user=`"$ibUser`"", "--password=`"$ibPassword`"",
+            "`"$dumpFilePath`"")
+    }
+    else {
+        $dbServer = $ibConfig.dbserver
+        $dbName = $ibConfig.dbname
+        $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
+        $dbms = $dbServerConfig.serverType
+        $dbLogin = Get-LoginFromConfig -serverConfig $dbServerConfig -loginType "databaseuser"
+        $dbUser = $dbLogin.user
+        $dbPassword = $dbLogin.password
+        $importArgs = @("infobase", "restore",
+            "--data=`"$srvDataPath`"",
+            "--dbms=`"$dbms`"", "--database-server=`"$dbServer`"", "--database-name=`"$dbName`"",
+            "--database-user=`"$dbUser`"", "--database-password=`"$dbPassword`"",
+            "--user=`"$ibUser`"", "--password=`"$ibPassword`"",
+            "`"$dumpFilePath`"")
+    }
+
+    Start-Process "ibcmd" -ArgumentList $importArgs -NoNewWindow -Wait
+    Remove-Item -Path "$srvDataPath" -Recurse -Force
+    Write-Host "Database $ibServer\$ibName restored from $dumpFilePath" -ForegroundColor Yellow
+}
