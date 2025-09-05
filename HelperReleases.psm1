@@ -23,7 +23,6 @@ function Publish-GenericPackageToGLRegistry {
 	param (
 		[pscustomobject[]]$mainConfig,
 		[string]$gLServer,
-		[string]$gLUser,
 		[string]$prName,
 		[string]$FilePath,
 		[string]$PackageName,
