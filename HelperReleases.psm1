@@ -26,7 +26,8 @@ function Publish-GenericPackageToGLRegistry {
 		[string]$prName,
 		[string]$FilePath,
 		[string]$PackageName,
-		[string]$PackageVersion
+		[string]$PackageVersion,
+		[string]$DestName
 	)
 
 
@@ -47,7 +48,7 @@ function Publish-GenericPackageToGLRegistry {
 
 	# URL загрузки
 	$fileName = [System.IO.Path]::GetFileName($FilePath)
-	$uri = "$baseUrl/api/v4/projects/$projectId/packages/generic/$PackageName/$PackageVersion/1cv8.cf"
+	$uri = "$baseUrl/api/v4/projects/$projectId/packages/generic/$PackageName/$PackageVersion/$DestName"
 
 	# Выполняем загрузку через Native PowerShell (Invoke-WebRequest PUT)
 	$headers = @{ 'PRIVATE-TOKEN' = $token }
