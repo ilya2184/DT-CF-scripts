@@ -35,7 +35,8 @@ function Update-WorkSpaceFromXML {
 
     $projecName = Get-UniqueProjectName
     $serverConfig = Get-ServerConfig -mainConfig $mainConfig -server $ibServer
-    $edtWorkspace = Get-WorkspaceForInternal $serverConfig -internal $ibName
+    $ibConfig = Get-DataBaseConfig -serverConfig $serverConfig -baseName $ibName
+    $edtWorkspace = $ibConfig.workspace
     $tempProjectPath = Join-Path -Path $edtWorkspace -ChildPath $projecName
     $importArgs = @("-data", $edtWorkspace,
         "-vmargs", "-Xmx8g",

@@ -68,23 +68,3 @@ function Get-DataBaseConfig {
 
 	return $foundBase
 }
-
-function Get-WorkspaceForInternal {
-	param (
-		[pscustomobject]$serverConfig,
-		[string]$internal
-	)
-
-    $foundBases = $serverConfig.databases | Where-Object {
-        $_.internal -eq $internal -and ![string]::IsNullOrWhiteSpace($_.workspace)
-    }
-
-    if (-not $foundBases) {
-        $serverName = $serverConfig.server
-        throw "There is no database workspace for internal = '$internal' in server = '$serverName'."
-    }
-
-	$foundBase = $foundBases | Select-Object -First 1
-
-	return $foundBase.workspace
-}

@@ -24,6 +24,9 @@ function Get-UpdatesFromSite {
     $yardConfigContent = Get-Content (Join-Path $yardTemplatesPath "$yardTemplateName.json")
 
     $serverConfig = Get-ServerConfig -mainConfig $mainConfig -server $onecReleasesServer
+    $baseConfig = Get-DataBaseConfig -serverConfig $serverConfig -baseName $yardTemplateName
+    $yardWorkspace = $baseConfig.workspace
+
     $itsCredentials = Get-LoginFromConfig -serverConfig $serverConfig -loginType "admin"
     $yardConfigContent = $yardConfigContent -replace '\$itsUser', $itsCredentials.user
     $yardConfigContent = $yardConfigContent -replace '\$itsPassword', $itsCredentials.password
@@ -31,8 +34,6 @@ function Get-UpdatesFromSite {
     $yardConfigPath = Join-Path $Env:TEMP (Get-UniqueConfigName + ".json")
     Set-Content $yardConfigPath $yardConfigContent
     # Create YARD config finish
-
-    $yardWorkspace = Get-WorkspaceForInternal -serverConfig $serverConfig -internal $yardTemplateName
 
     $yardArgs = @("process",
         "--work-dir `"$yardWorkspace`"", "`"$yardConfigPath`"")
