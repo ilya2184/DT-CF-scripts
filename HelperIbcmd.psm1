@@ -67,14 +67,14 @@ function Save-DBConfigToCF {
     param (
         [pscustomobject[]]$mainConfig,
         [string]$ibServer,
-        [string]$ibName
+        [string]$ibName,
+        [string]$dtsPath
     )
 
-    Write-Host "Export $ibServer\$ibName" -ForegroundColor Yellow
+    Write-Host "Database $ibServer\$ibName dump to $dtsPath" -ForegroundColor Yellow
 
-    $exportName = Get-UniqueExportName
-    $srvDataPath = Join-Path -Path $Env:TEMP -ChildPath ("srv" + $exportName)
-    $cfPath = Join-Path -Path $Env:TEMP -ChildPath $exportName
+    $srvName = Get-UniqueExportName
+    $srvDataPath = Join-Path -Path $Env:TEMP -ChildPath ("srv" + $srvName)
 
     $ibServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $ibServer
     $ibLogin = Get-LoginFromConfig -serverConfig $ibServerConfig -loginType "ibadmin"
@@ -83,13 +83,24 @@ function Save-DBConfigToCF {
 
     $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
 
+    $dbServer = if ($ibServerConfig.serverType -eq "file") { $ibServer } else { $ibConfig.dbserver }
+    $dbName = if ($ibServerConfig.serverType -eq "file") { $ibName } else { $ibConfig.dbname } 
+    $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
+    $dbConfig = Get-DataBaseConfig -serverConfig $dbServerConfig -baseName $dbName
+    $cfPath = Join-Path -Path $dtsPath -ChildPath ($dbConfig.internal)
+    if (-not (Test-Path $cfPath)) {New-Item -Path $cfPath -ItemType Directory -Force}
+
+    $dateString = "1cv8-" + (Get-Date).ToString('yyyy-MM-dd-HH-mm')
+    $cfFileName = $dateString + ".cf"
+    $cfFilePath = Join-Path -Path $cfPath -ChildPath $cfFileName
+
     if ($ibServerConfig.serverType -eq "file") {
         $dbPath = $ibConfig.path
-        $exportArgs = @("infobase", "config", "save",
+        $importArgs = @("infobase", "config", "export",
             "--data=`"$srvDataPath`"",
             "--database-path=`"$dbPath`"",
             "--user=`"$ibUser`"", "--password=`"$ibPassword`"",
-            "`"$cfPath`"")
+            "`"$cfFilePath`"")
     }
     else {
         $dbServer = $ibConfig.dbserver
@@ -99,18 +110,17 @@ function Save-DBConfigToCF {
         $dbLogin = Get-LoginFromConfig -serverConfig $dbServerConfig -loginType "databaseuser"
         $dbUser = $dbLogin.user
         $dbPassword = $dbLogin.password
-        $exportArgs = @("infobase", "config", "save",
+        $importArgs = @("infobase", "config", "export",
             "--data=`"$srvDataPath`"",
             "--dbms=`"$dbms`"", "--database-server=`"$dbServer`"", "--database-name=`"$dbName`"",
             "--database-user=`"$dbUser`"", "--database-password=`"$dbPassword`"",
             "--user=`"$ibUser`"", "--password=`"$ibPassword`"",
-            "`"$cfPath`"")
+            "`"$cfFilePath`"")
     }
 
-    Start-Process "ibcmd" -ArgumentList $exportArgs -NoNewWindow -Wait
+    Start-Process "ibcmd" -ArgumentList $importArgs -NoNewWindow -Wait
     Remove-Item -Path "$srvDataPath" -Recurse -Force
-    Write-Host "Now we have 1c-cf in $xmlPath" -ForegroundColor Yellow
-    return $cfPath
+    Write-Host "Database config $ibServer\$ibName saved to $cfFilePath" -ForegroundColor Yellow
 }
 
 function Export-XMLToCF {
