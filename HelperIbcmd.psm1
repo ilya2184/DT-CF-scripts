@@ -63,6 +63,56 @@ function Export-DBConfigToXML {
     return $xmlPath
 }
 
+function Save-DBConfigToCF {
+    param (
+        [pscustomobject[]]$mainConfig,
+        [string]$ibServer,
+        [string]$ibName
+    )
+
+    Write-Host "Export $ibServer\$ibName" -ForegroundColor Yellow
+
+    $exportName = Get-UniqueExportName
+    $srvDataPath = Join-Path -Path $Env:TEMP -ChildPath ("srv" + $exportName)
+    $cfPath = Join-Path -Path $Env:TEMP -ChildPath $exportName
+
+    $ibServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $ibServer
+    $ibLogin = Get-LoginFromConfig -serverConfig $ibServerConfig -loginType "ibadmin"
+    $ibUser = $ibLogin.user
+    $ibPassword = $ibLogin.password
+
+    $ibConfig = Get-DataBaseConfig -serverConfig $ibServerConfig -baseName $ibName
+
+    if ($ibServerConfig.serverType -eq "file") {
+        $dbPath = $ibConfig.path
+        $exportArgs = @("infobase", "config", "save",
+            "--data=`"$srvDataPath`"",
+            "--database-path=`"$dbPath`"",
+            "--user=`"$ibUser`"", "--password=`"$ibPassword`"",
+            "`"$cfPath`"")
+    }
+    else {
+        $dbServer = $ibConfig.dbserver
+        $dbName = $ibConfig.dbname
+        $dbServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $dbServer
+        $dbms = $dbServerConfig.serverType
+        $dbLogin = Get-LoginFromConfig -serverConfig $dbServerConfig -loginType "databaseuser"
+        $dbUser = $dbLogin.user
+        $dbPassword = $dbLogin.password
+        $exportArgs = @("infobase", "config", "save",
+            "--data=`"$srvDataPath`"",
+            "--dbms=`"$dbms`"", "--database-server=`"$dbServer`"", "--database-name=`"$dbName`"",
+            "--database-user=`"$dbUser`"", "--database-password=`"$dbPassword`"",
+            "--user=`"$ibUser`"", "--password=`"$ibPassword`"",
+            "`"$cfPath`"")
+    }
+
+    Start-Process "ibcmd" -ArgumentList $exportArgs -NoNewWindow -Wait
+    Remove-Item -Path "$srvDataPath" -Recurse -Force
+    Write-Host "Now we have 1c-cf in $xmlPath" -ForegroundColor Yellow
+    return $cfPath
+}
+
 function Export-XMLToCF {
     param (
         [string]$xmlPath
