@@ -51,7 +51,7 @@ function Publish-GenericPackageToGLRegistry {
 	$uri = "$baseUrl/api/v4/projects/$projectId/packages/generic/$PackageName/$PackageVersion/$DestName"
 
 	# Выполняем загрузку через Native PowerShell (Invoke-WebRequest PUT)
-	$headers = @{ 'PRIVATE-TOKEN' = $token }
+	$headers = @{ 'DEPLOY-TOKEN' = $token }
 	Write-Host "Uploading '$fileName' to registry: $uri" -ForegroundColor Yellow
 	$response = Invoke-WebRequest `
 		-Uri $uri -Method Put -Headers $headers `
