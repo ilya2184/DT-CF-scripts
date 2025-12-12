@@ -1,5 +1,5 @@
-if (-not (Get-Command "rac" -ErrorAction SilentlyContinue)) {
-    $errorMessage = "'rac' not found in PATH. Install 1C:Enterprice server administative components and add it to PATH."
+if (-not (Get-Command "yard" -ErrorAction SilentlyContinue)) {
+    $errorMessage = "'yard' not found in PATH. Install packet 'opm install yard' and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля
 }
