@@ -136,7 +136,8 @@ function Get-LatestGenericPackageFromGLRegistry {
 	# Получаем имя файла
 	$packageVersion = $foundPackage.Version
 	$fileName = $packageVersion + ".cf"
-	$localFilePath = Join-Path -Path $releasePath -ChildPath $fileName
+    $packagePath = Join-Path -Path $releasePath -ChildPath $PackageName
+	$localFilePath = Join-Path -Path $packagePath -ChildPath $fileName
 	if (Test-Path $localFilePath) {
         Write-Host "Release exist: $localFilePath" -ForegroundColor Yellow
 		return $localFilePath 
