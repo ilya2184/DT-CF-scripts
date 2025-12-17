@@ -132,16 +132,22 @@ function Get-LatestGenericPackageFromGLRegistry {
         Write-Host "No package found with '1cv8.cf' file" -ForegroundColor Red
         return $null
     }
-    
+
+	# Получаем имя файла
+	$packageVersion = $foundPackage.Version
+	$fileName = $packageVersion + ".cf"
+	$localFilePath = Join-Path -Path $releasePath -ChildPath $fileName
+	if (Test-Path $localFilePath) {
+        Write-Host "Release exist: $localFilePath" -ForegroundColor Yellow
+		return $localFilePath 
+    }	
+
     $downloadUri = $foundPackage.DownloadUri
 	    
     Write-Host "Downloading file: $($cfFile.file_name)" -ForegroundColor Yellow
     $fileResponse = Invoke-WebRequest -Uri $downloadUri -Method Get -Headers $headers -UseBasicParsing
 
     # Сохраняем файл
-	$packageVersion = $foundPackage.Version
-	$fileName = $packageVersion + ".cf"
-	$localFilePath = Join-Path -Path $releasePath -ChildPath $fileName
     $fileResponse.RawContentStream.Position = 0
     $fileStream = [System.IO.File]::Create($localFilePath)
     $fileResponse.RawContentStream.CopyTo($fileStream)
