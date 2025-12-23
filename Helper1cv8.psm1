@@ -105,14 +105,11 @@ function Update-DBCfg {
     param (
         [pscustomobject[]]$mainConfig,
         [string]$ibServer,
-        [string]$ibName
+        [string]$ibName,
+        [string]$logFile
     )
 
     Write-Host "Appling saved config in $ibServer\$ibName to infobase config" -ForegroundColor Yellow
-
-    $logName = Get-UniqueLogName
-    $logDataPath = Join-Path -Path $Env:TEMP -ChildPath ("log-" + $logName + ".txt")
-
 
     $ibServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $ibServer
     $ibLogin = Get-LoginFromConfig -serverConfig $ibServerConfig -loginType "ibadmin"
@@ -129,6 +126,7 @@ function Update-DBCfg {
             "/N `"$ibUser`"", "/P `"$ibPassword`"",
             "/UpdateDBCfg",
             "/UC 0000",
+            "/Out `"$logFile`"", "-NoTruncate"
             "/DisableStartupDialogs", "/DisableStartupMessages")
     }
     else {
@@ -138,13 +136,12 @@ function Update-DBCfg {
             "/S `"$ibServer\$ibName`"",
             "/N `"$ibUser`"", "/P `"$ibPassword`"",
             "/UpdateDBCfg", "-Server", "-v2",
-            "/UC 0000", "/Out `"$logDataPath`""
+            "/UC 0000",
+            "/Out `"$logFile`"", "-NoTruncate"
             "/DisableStartupDialogs", "/DisableStartupMessages")
     }
 
     Start-Process "1cv8" -ArgumentList $importArgs -NoNewWindow -Wait
-    Get-Content -Path $logDataPath
-    Remove-Item -Path $logDataPath -Recurse -Force
     Write-Host "Saved config applied for $ibServer\$ibName" -ForegroundColor Yellow
 }
 
