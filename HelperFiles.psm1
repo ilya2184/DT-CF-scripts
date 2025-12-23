@@ -135,3 +135,34 @@ function Optimize-RoleSizes {
     }
 
 }
+
+function Test-FileSize {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$cfPath,
+        [Parameter()]
+        [int]$minSizeMB = 500
+    )
+
+    # 1. Проверяем существование файла
+    if (-not (Test-Path -Path $cfPath -PathType Leaf)) {
+        throw [System.IO.FileNotFoundException] "File not found: $cfPath"
+    }
+
+    # 2. Получаем информацию о файле
+    try {
+        $fileInfo = Get-Item -Path $cfPath
+        $fileSizeMB = [math]::Round($fileInfo.Length / 1MB, 2)
+    }
+    catch {
+        throw [System.IO.IOException] "Failed to get file info for '$cfPath': $_"
+    }
+
+    # 3. Проверяем размер
+    if ($fileSizeMB -le $minSizeMB) {
+        throw [System.ArgumentException] "File too small: $fileSizeMB MB (minimum $minSizeMB MB required)"
+    }
+
+    # 4. Всё прошло успешно
+    return $fileSizeMB
+}
