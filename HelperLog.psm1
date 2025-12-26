@@ -3,8 +3,7 @@
         [Parameter(Mandatory = $true)]
         [string]$logMessage,
         [string]$logFile,
-        [switch]$isError,
-        [ConsoleColor]$Color = [ConsoleColor]::White
+        [bool]$isError
     )
 
     # Формируем временную метку
@@ -14,10 +13,10 @@
     $prefix = if ($isError) { "[ERROR]" } else { "[INFO]" }
     
     # Формируем итоговое сообщение
-    $logMessageFull = "$timestamp $prefix $messageText"
+    $logMessageFull = "$timestamp $prefix $logMessage"
     
     # Выводим в консоль с указанным цветом
-    Write-Host $logMessageFull -ForegroundColor $Color
+    Write-Host $logMessageFull -ForegroundColor White
     
     # Если указан файл — записываем в файл
     if ($logFile) {
