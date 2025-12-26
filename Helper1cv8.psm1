@@ -1,4 +1,4 @@
-if (-not (Get-Command "1cv8" -ErrorAction SilentlyContinue)) {
+﻿if (-not (Get-Command "1cv8" -ErrorAction SilentlyContinue)) {
     $errorMessage = "'1cv8' not found in PATH. Install 1C:Enterprice and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля

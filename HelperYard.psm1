@@ -1,4 +1,4 @@
-if (-not (Get-Command "yard" -ErrorAction SilentlyContinue)) {
+﻿if (-not (Get-Command "yard" -ErrorAction SilentlyContinue)) {
     $errorMessage = "'yard' not found in PATH. Install packet 'opm install yard' and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля

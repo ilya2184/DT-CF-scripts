@@ -1,4 +1,4 @@
-function Remove-Backups {
+﻿function Remove-Backups {
     param (
         [string]$backupPath,
         [int]$keepBackupCount

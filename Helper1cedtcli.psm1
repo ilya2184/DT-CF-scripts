@@ -1,4 +1,4 @@
-if (-not (Get-Command "1cedtcli" -ErrorAction SilentlyContinue)) {
+﻿if (-not (Get-Command "1cedtcli" -ErrorAction SilentlyContinue)) {
     $errorMessage = "'1cedtcli' not found in PATH. Install 1C:EDT and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля

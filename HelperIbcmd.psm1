@@ -1,4 +1,4 @@
-if (-not (Get-Command "ibcmd" -ErrorAction SilentlyContinue)) {
+﻿if (-not (Get-Command "ibcmd" -ErrorAction SilentlyContinue)) {
     $errorMessage = "'ibcmd' not found in PATH. Install 1C:Enterprice server components and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля

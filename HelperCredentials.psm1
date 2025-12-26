@@ -1,4 +1,4 @@
-function Get-MainConfig {
+﻿function Get-MainConfig {
 	param (
 		[string]$mainConfigPath
 	)

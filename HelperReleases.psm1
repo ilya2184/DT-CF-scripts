@@ -1,4 +1,4 @@
-function Get-LatestReleasePath {
+﻿function Get-LatestReleasePath {
 	param (
 		[string]$releasesPath,
 		[string]$internal

@@ -1,4 +1,4 @@
-Function Write-Log {
+﻿Function Write-Log {
     param(
         [Parameter(Mandatory = $true)]
         [string]$logMessage,

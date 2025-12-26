@@ -1,4 +1,4 @@
-if (-not (Get-Command "rac" -ErrorAction SilentlyContinue)) {
+﻿if (-not (Get-Command "rac" -ErrorAction SilentlyContinue)) {
     $errorMessage = "'rac' not found in PATH. Install 1C:Enterprice server components and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля

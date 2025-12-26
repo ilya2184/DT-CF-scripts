@@ -1,4 +1,4 @@
-function Send-TelegramMessageToUsers {
+﻿function Send-TelegramMessageToUsers {
     param (
         [pscustomobject[]]$mainConfig,
         [string]$message
