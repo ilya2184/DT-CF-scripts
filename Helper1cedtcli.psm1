@@ -15,7 +15,7 @@ function Get-ConfigVersionFromEDTsrc {
     param (
         [string]$projectSrc
     )
-    
+
     [xml]$configInfo = Get-Content -Path (Join-Path -Path $projectSrc -ChildPath "Configuration/Configuration.mdo")
     [string]$configVersion = $configInfo.Configuration.Version
 
@@ -30,7 +30,7 @@ function Update-WorkSpaceFromXML {
         [string]$ibName,
         [string]$xmlPath
     )
-    
+
     Write-Host "Import from 1c-xml $xmlPath to $ibServer\$ibName workspace" -ForegroundColor Yellow
 
     $projecName = Get-UniqueProjectName
@@ -43,9 +43,9 @@ function Update-WorkSpaceFromXML {
         "-command", "import",
         "--configuration-files", "`"$xmlPath`"",
         "--project", "`"$tempProjectPath`"")
-    
+
     Start-Process "1cedtcli" -ArgumentList $importArgs -NoNewWindow -Wait
-    
+
     $ibConfig = Get-DataBaseConfig -serverConfig $serverConfig -baseName $ibName
     $gitPath = Join-Path -Path $edtWorkspace -ChildPath "$($ibConfig.gitname)"
 
@@ -60,25 +60,25 @@ function Update-WorkSpaceFromXML {
     } else {
         Write-Warning "File $sonarProperiesPath not found. Skipping sonar.projectVersion update."
     }
-    
+
     Write-Host "  Remove old src edt-xml" -ForegroundColor DarkYellow
-    
+
     $projectSrc = Join-Path -Path (Join-Path -Path $gitPath -ChildPath "$($ibConfig.project)") -ChildPath "src"
     Remove-Item -Path $projectSrc -Recurse -Force
-    
+
     Write-Host "  Move new src ext-xml" -ForegroundColor Yellow
-    
+
     Move-Item -Path $tempProjectSrc -Destination $projectSrc
-    
+
     Write-Host "  Remove temp project $projecName from workspace" -ForegroundColor DarkYellow
     $deleteArgs = @("-data", $edtWorkspace,
         "-command", "delete", "--yes"
         "[$projecName]")
     Start-Process "1cedtcli" -ArgumentList $deleteArgs -NoNewWindow -Wait
-    
+
     Write-Host "  Remove temp project files $tempProjectPath" -ForegroundColor DarkYellow
     Remove-Item -Path $tempProjectPath -Recurse -Force
-    
+
     Write-Host "Project $gitPath updated to $configVersion" -ForegroundColor Yellow
     return $gitPath
 }
@@ -91,7 +91,7 @@ function Export-ProjectTo1cXML {
         [string]$edtWorkspace,
         [string]$gitPath
     )
-    
+
     Write-Host "Export from $glServer/$glName to 1c-xml" -ForegroundColor Yellow
 
     $glServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $glServer
@@ -108,12 +108,12 @@ function Export-ProjectTo1cXML {
         "-command", "export",
         "--project", "`"$projectPath`"",
         "--configuration-files", "`"$xmlPath`"")
-    
+
     Start-Process "1cedtcli" -ArgumentList $exportArgs -NoNewWindow -Wait
-    
+
     $zipPath = Join-Path -Path $Env:TEMP -ChildPath ($configVersion + ".zip")
     if (Test-Path $zipPath) {Remove-Item $zipPath -Recurse -Force}
-    
+
     Compress-Archive -Path $xmlPath -DestinationPath $zipPath
     Remove-Item $xmlPath -Recurse -Force
     Write-Host "Now we have $glServer/$glName 1C-XML-ZIP $zipPath, $edtWorkspace mybe updated" -ForegroundColor Yellow

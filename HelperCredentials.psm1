@@ -1,18 +1,18 @@
 ﻿function Get-MainConfig {
-	param (
-		[string]$mainConfigPath
-	)
+    param (
+        [string]$mainConfigPath
+    )
 
     $mainConfig = Get-Content $mainConfigPath | ConvertFrom-Json
 
-	return $mainConfig
+    return $mainConfig
 }
 
 function Get-ServerConfig {
-	param (
-		[pscustomobject[]]$mainConfig,
-		[string]$server
-	)
+    param (
+        [pscustomobject[]]$mainConfig,
+        [string]$server
+    )
 
     $foundConfigs = $mainConfig | Where-Object {
             $_.server -eq $server
@@ -22,14 +22,14 @@ function Get-ServerConfig {
         throw "There is no config for server = '$server'."
     }
 
-	$foundConfig = $foundConfigs | Select-Object -First 1
+    $foundConfig = $foundConfigs | Select-Object -First 1
 
-	return $foundConfig
+    return $foundConfig
 }
 
 function Get-LoginFromConfig {
     param (
-		[pscustomobject]$serverConfig,
+        [pscustomobject]$serverConfig,
         [string]$loginType
     )
 
@@ -42,17 +42,17 @@ function Get-LoginFromConfig {
         throw "There is no login = '$loginType' in server = '$serverName'."
     }
 
-	$foundLogin = $foundLogins | Select-Object -First 1
+    $foundLogin = $foundLogins | Select-Object -First 1
 
-	return $foundLogin
+    return $foundLogin
 
 }
 
 function Get-DataBaseConfig {
-	param (
-		[pscustomobject]$serverConfig,
-		[string]$baseName
-	)
+    param (
+        [pscustomobject]$serverConfig,
+        [string]$baseName
+    )
 
 
     $foundBases = $serverConfig.databases | Where-Object {
@@ -64,7 +64,7 @@ function Get-DataBaseConfig {
         throw "There is no config server = '$serverName', database name = '$baseName'."
     }
 
-	$foundBase = $foundBases | Select-Object -First 1
+    $foundBase = $foundBases | Select-Object -First 1
 
-	return $foundBase
+    return $foundBase
 }

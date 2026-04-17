@@ -121,7 +121,7 @@ function Optimize-RoleSizes {
     param (
         [string]$sourcePath
     )
-	
+    
     # Ищем папки с именем Roles рекурсивно
     $rolesDirs = Get-ChildItem -Path $sourcePath -Directory -Recurse | Where-Object { $_.Name -eq 'Roles' }
 

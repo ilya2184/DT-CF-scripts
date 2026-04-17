@@ -12,26 +12,26 @@ function Get-UniqueLogName {
 }
 
 function Get-MaxVersionPath {
-	param (
+    param (
         [string]$directoryPath
     )
 
-	$subdirectories = Get-ChildItem -Path $directoryPath -Directory
+    $subdirectories = Get-ChildItem -Path $directoryPath -Directory
 
-	$maxVersion = ""
-	$maxVersionPath = ""
-	
-	foreach ($subdir in $subdirectories) {
-		$version = $subdir.Name
-		if ($version -match '^\d+\.\d+\.\d+\.\d+$') {
-			if ($maxVersion -eq "" -or (Compare-Versions -version1 $version -version2 $maxVersion)) {
-				$maxVersion = $version
-				$maxVersionPath = $subdir.FullName
-			}
-		}
-	}
+    $maxVersion = ""
+    $maxVersionPath = ""
+    
+    foreach ($subdir in $subdirectories) {
+        $version = $subdir.Name
+        if ($version -match '^\d+\.\d+\.\d+\.\d+$') {
+            if ($maxVersion -eq "" -or (Compare-Versions -version1 $version -version2 $maxVersion)) {
+                $maxVersion = $version
+                $maxVersionPath = $subdir.FullName
+            }
+        }
+    }
 
-	return $maxVersionPath
+    return $maxVersionPath
 
 }
 
