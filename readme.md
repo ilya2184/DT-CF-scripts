@@ -23,6 +23,7 @@
 - `HelperRac.psm1` — управление кластерами и сессиями через rac
 - `Helper1cedtcli.psm1` — работа с проектами EDT
 - `HelperFiles.psm1` — управление резервными копиями
+- `HelperBitrix24.psm1` — передача релизов `.cf` через Диск Bitrix24 по входящему веб-хуку (файл режется на части + манифест с SHA256; работает в Windows PowerShell 5.1 и PowerShell 7)
 - `HelperTelegram.psm1`, `HelperYard.psm1` и др. — интеграция с внешними сервисами
 
 ## Требования
