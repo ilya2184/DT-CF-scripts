@@ -1,5 +1,5 @@
 ﻿if (-not (Get-Command "1cv8" -ErrorAction SilentlyContinue)) {
-    $errorMessage = "'1cv8' not found in PATH. Install 1C:Enterprice and add it to PATH."
+    $errorMessage = "'1cv8' not found in PATH. Install 1C:Enterprise and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля
 }
@@ -109,7 +109,7 @@ function Update-DBCfg {
         [string]$logFile
     )
 
-    Write-Host "Appling saved config in $ibServer\$ibName to infobase config" -ForegroundColor Yellow
+    Write-Host "Applying saved config in $ibServer\$ibName to infobase config" -ForegroundColor Yellow
 
     $ibServerConfig = Get-ServerConfig -mainConfig $mainConfig -server $ibServer
     $ibLogin = Get-LoginFromConfig -serverConfig $ibServerConfig -loginType "ibadmin"
@@ -184,5 +184,5 @@ function Update-ibData {
     }
 
     Start-Process "1cv8c" -ArgumentList $importArgs -NoNewWindow  -Wait
-    Write-Host "Update infobase data finish $ibServer\$ibName" -ForegroundColor Yellow
+    Write-Host "Update infobase data finished $ibServer\$ibName" -ForegroundColor Yellow
 }

@@ -1,5 +1,5 @@
 ﻿if (-not (Get-Command "ibcmd" -ErrorAction SilentlyContinue)) {
-    $errorMessage = "'ibcmd' not found in PATH. Install 1C:Enterprice server components and add it to PATH."
+    $errorMessage = "'ibcmd' not found in PATH. Install 1C:Enterprise server components and add it to PATH."
     Write-Error -Message $errorMessage -Category ResourceUnavailable
     throw $errorMessage  # Прерываем загрузку модуля
 }
@@ -214,7 +214,7 @@ function Set-SavedConfigToDB {
         [string]$ibName
     )
 
-    Write-Host "Appling saved config in $ibServer\$ibName to infobase config" -ForegroundColor Yellow
+    Write-Host "Applying saved config in $ibServer\$ibName to infobase config" -ForegroundColor Yellow
 
     $srvName = Get-UniqueExportName
     $srvDataPath = Join-Path -Path $Env:TEMP -ChildPath ("srv" + $srvName)

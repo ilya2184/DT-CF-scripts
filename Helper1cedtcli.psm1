@@ -116,7 +116,7 @@ function Export-ProjectTo1cXML {
 
     Compress-Archive -Path $xmlPath -DestinationPath $zipPath
     Remove-Item $xmlPath -Recurse -Force
-    Write-Host "Now we have $glServer/$glName 1C-XML-ZIP $zipPath, $edtWorkspace mybe updated" -ForegroundColor Yellow
+    Write-Host "Now we have $glServer/$glName 1C-XML-ZIP $zipPath, $edtWorkspace maybe updated" -ForegroundColor Yellow
 
     return $zipPath
 }

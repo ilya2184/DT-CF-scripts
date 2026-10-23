@@ -350,7 +350,7 @@ function Get-LatestReleaseFromBitrix24Disk {
 
     $localFilePath = Join-Path -Path $packagePath -ChildPath "$($manifest.version).cf"
     if ((Test-Path $localFilePath) -and ((Get-Item -LiteralPath $localFilePath).Length -eq [int64]$manifest.size)) {
-        Write-Host "Release exist: $localFilePath" -ForegroundColor Yellow
+        Write-Host "Release exists: $localFilePath" -ForegroundColor Yellow
         return $localFilePath
     }
 

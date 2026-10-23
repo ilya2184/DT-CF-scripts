@@ -142,7 +142,7 @@ function Get-LatestGenericPackageFromGLRegistry {
     }
     $localFilePath = Join-Path -Path $packagePath -ChildPath $fileName
     if (Test-Path $localFilePath) {
-        Write-Host "Release exist: $localFilePath" -ForegroundColor Yellow
+        Write-Host "Release exists: $localFilePath" -ForegroundColor Yellow
         return $localFilePath 
     }    
 
